@@ -100,5 +100,3 @@ docker-compose down -v
 Isso vai parar todos os contêineres relacionados à aplicação e também removerá os volumes Docker associados. Lembre-se de que isso também excluirá todos os dados do banco de dados. Se quiser que os dados persistam, basta remover o `-v`.
 
 Mesmo depois de remover os contêineres, a imagem Docker da aplicação ainda estará disponível localmente, permitindo que você a reconstrua e execute novamente a qualquer momento.
-
-Agora você pode clonar o repositório, seguir as instruções do README e executar a aplicação com facilidade.
