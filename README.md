@@ -8,16 +8,16 @@ Este projeto foi desenvolvido como parte do módulo de conteinerização do curs
 
 Os requisitos para nosso projeto Docker são os seguintes:
 
-Utilizar uma aplicação web de preferência na linguagem Python com Flask.
-Criar um Dockerfile para a aplicação.
-Criar um docker-compose.yaml com os seguintes requisitos:
-Incluir um banco de dados (MySQL ou PostgreSQL) como um serviço.
-Ter dois serviços no total:
-O serviço da aplicação.
-Um serviço de volume para persistência de dados do banco de dados.
-Criar e referenciar uma network para conectar os serviços.
-Garantir que os serviços da aplicação dependam do serviço do banco de dados.
-Mostrar que a aplicação está funcionando na porta 80.
+- Utilizar uma aplicação web de preferência na linguagem Python com Flask.
+- Criar um Dockerfile para a aplicação.
+- Criar um docker-compose.yaml com os seguintes requisitos:
+- Incluir um banco de dados (MySQL ou PostgreSQL) como um serviço.
+- Ter dois serviços no total:
+- O serviço da aplicação.
+- Um serviço de volume para persistência de dados do banco de dados.
+- Criar e referenciar uma network para conectar os serviços.
+- Garantir que os serviços da aplicação dependam do serviço do banco de dados.
+- Mostrar que a aplicação está funcionando na porta 80.
 
 ## Como rodar a aplicação
 
