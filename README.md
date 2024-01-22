@@ -1,9 +1,11 @@
 # Dad Jokes App
 
 ## Sobre
-Este projeto foi desenvolvido como parte do módulo de conteinerização do curso de DevOps da ADA. A aplicação Dad Jokes App foi criada em Python e Flask e tem como objetivo consumir piadas da API "Icanhazdajokes", armazená-las em um banco de dados MySQL e exibi-las em uma página web. A aplicação possui funcionalidades como obtenção de novas piadas, exibição da quantidade total de piadas disponíveis, um contador regressivo para a próxima busca automática de piadas e um controle de taxa para limitar as solicitações dos usuários.
+
+Este projeto foi desenvolvido como parte do módulo de conteinerização do curso de DevOps da ADA. A aplicação Dad Jokes App foi criada em Python e Flask e tem como objetivo consumir piadas da API "Icanhazdajokes", armazená-las em um banco de dados MySQL e exibi-las em uma página web.
 
 ## Requisitos do Projeto
+
 Os requisitos para nosso projeto Docker são os seguintes:
 
 Utilizar uma aplicação web de preferência na linguagem Python com Flask.
