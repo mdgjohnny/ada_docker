@@ -53,9 +53,9 @@ d61447f35c71   ada_docker_myapp_network   bridge    local
 
 Podemos em seguida verificar os processos que estão em execução nessa mesma rede e verificar que há dois serviços que compartilham dela:
 ````bash
-$ docker ps --filter network=dadjokes_myapp_network
+$ docker ps --filter network=ada_docker_myapp_network
 CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS                     PORTS                                                  NAMES
-df19c35c0f51   dadjokes_app   "/bin/sh -c 'python …"   5 minutes ago   Up 5 minutes (unhealthy)   127.0.0.1:80->80/tcp                                   python-server
+df19c35c0f51   adadocker_app   "/bin/sh -c 'python …"   5 minutes ago   Up 5 minutes (unhealthy)   127.0.0.1:80->80/tcp                                   python-server
 d67a47546c3f   mysql:latest   "docker-entrypoint.s…"   5 minutes ago   Up 5 minutes (healthy)     0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp   mysql_db
 ````
 
