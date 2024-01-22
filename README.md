@@ -38,21 +38,23 @@ docker-compose up -d
 ```
 Se tudo tiver dado certo, você verá o seguinte resultado:
 ```bash
-Creating network "dadjokes_myapp_network" with the default driver
+Creating network "ada_docker_myapp_network" with the default driver
+Creating volume "ada_docker_db_data" with default driver
 Creating mysql_db ... done
 Creating python-server ... done
 
 ```
 
-Para conferirmos que ambos os aplicativos compartilham a mesma rede, podemos primeiro inspecionar as redes disponíveis e procurar pelo nome da rede que foi definido no nosso arquivo .yml:
+Para conferirmos que ambos os aplicativos compartilham a mesma rede, podemos primeiro inspecionar as redes disponíveis e procurar pelo nome da rede:
 ````bash
-docker network ls | grep dadjokes
-f35e063c8334   dadjokes_myapp_network   bridge    local
+$ docker network ls
+NETWORK ID     NAME                       DRIVER    SCOPE
+d61447f35c71   ada_docker_myapp_network   bridge    local
 ````
 
-Podemos então verificar os processos que estão em execução na rede:
+Podemos em seguida verificar os processos que estão em execução nessa mesma rede e verificar que há dois serviços que compartilham dela:
 ````bash
-docker ps --filter network=dadjokes_myapp_network
+$ docker ps --filter network=dadjokes_myapp_network
 CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS                     PORTS                                                  NAMES
 df19c35c0f51   dadjokes_app   "/bin/sh -c 'python …"   5 minutes ago   Up 5 minutes (unhealthy)   127.0.0.1:80->80/tcp                                   python-server
 d67a47546c3f   mysql:latest   "docker-entrypoint.s…"   5 minutes ago   Up 5 minutes (healthy)     0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp   mysql_db
@@ -60,22 +62,15 @@ d67a47546c3f   mysql:latest   "docker-entrypoint.s…"   5 minutes ago   Up 5 mi
 
 Como queríamos demonstrar.
 
-Verifica-se que o volume foi criado da mesma maneira:
+Comprova-se que o volume foi criado da mesma maneira:
 ````bash
-docker volume ls | grep dadjokes
-local     dadjokes_db_data
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     ada_docker_db_data
 ````
 
-Por fim, podemos verificar que a aplicação está funcionando conforme o esperado acessando http://localhost:80. No entanto, esse processo já foi automatizado na própria configuração do YML, como podemos ver aqui:
+Por fim, podemos verificar que a aplicação está funcionando conforme o esperado acessando http://localhost:80. No entanto, esse processo já foi automatizado na própria configuração do YML, como podemos ver aqui nesta seção do serviço do aplicativo:
 ```yaml
-    container_name: python-server
-    environment:
-      DB_HOST: mysql_db
-      DB_NAME: myappdb
-      DB_USER: ada
-      DB_PASSWORD: test
-    ports:
-      -  127.0.0.1:80:80
     depends_on:
       db:
         condition: service_healthy
@@ -88,15 +83,15 @@ Por fim, podemos verificar que a aplicação está funcionando conforme o espera
      - .:/app
 ```
 
-A seção acima define uma dependência entre o serviço da aplicação e o serviço do banco de dados. A aplicação só iniciará após o serviço do banco de dados ser considerado saudável, isto é, caso o serviço do MySQL esteja em execução na máquina local (como você pode ver no mesmo campo de "health check" do serviço de banco de dados). Além disso, também verificamos a integridade da aplicação antes de executá-la, determinando se a rota do servidor do Flask está disponível por meio de uma requisição com curl. Isso significa que a imagem do Docker só iniciará a aplicação se for capaz de acessar a rota do servidor do Flask com sucesso, atendendo ao requisito de demonstrar que a aplicação está funcionando e acessível na porta 80.
+O código acima define uma dependência entre o serviço da aplicação e o serviço do banco de dados. A aplicação só iniciará após o serviço do banco de dados ser considerado saudável, isto é, caso o serviço do MySQL esteja em execução na máquina local (como definido na mesma seção do serviço de banco de dados no arquivo de compose). Além disso, também verificamos a integridade da aplicação antes de executá-la, determinando se a rota do servidor do Flask está disponível por meio de uma requisição com curl. Isso significa que a imagem do Docker só iniciará a aplicação se for capaz de acessar a rota do servidor do Flask com sucesso, atendendo ao requisito de demonstrar que a aplicação está funcionando e acessível na porta 80:
 
-Para parar e remover os contêineres da aplicação e limpar os volumes associados, execute o seguinte comando no diretório raiz do projeto:
+![image](https://github.com/mdgjohnny/ada_docker/assets/55006172/25c11213-b7a1-4df7-82bb-52859e38d784)
+
+
+Se quiser parar os processos e remover os contêineres da aplicação, limpando os volumes associados, execute o seguinte comando no diretório raiz do projeto:
 
 ````bash
 docker-compose down -v
 ````
 
-
-Isso vai parar todos os contêineres relacionados à aplicação e também removerá os volumes Docker associados. Lembre-se de que isso também excluirá todos os dados do banco de dados. Se quiser que os dados persistam, basta remover o `-v`.
-
-Mesmo depois de remover os contêineres, a imagem Docker da aplicação ainda estará disponível localmente, permitindo que você a reconstrua e execute novamente a qualquer momento.
+Isso vai desmontar todos os contêineres relacionados à aplicação e também remover os volumes Docker associados. Lembre-se de que isso também exclui todos os dados obtidos anteriormente. Se quiser que os dados persistam, basta remover o `-v`. De todo modo, a imagem Docker da aplicação ainda estará disponível localmente, permitindo que você a reconstrua e execute novamente a qualquer momento.
