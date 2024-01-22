@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: python-server
+    environment:
+      DB_HOST: mysql_db
+      DB_NAME: myappdb
+      DB_USER: ada
+      DB_PASSWORD: test
+    ports:
+      -  127.0.0.1:80:80
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+        test: ["CMD-SHELL", "curl -f http://localhost:80/jokes"]
+        interval: 10s
+        timeout: 5s
+        retries: 3
+    volumes:
+     - .:/app
+    networks:
+     - myapp_network
+  db:
+    image: mysql:latest
+    restart: always
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myappdb
+      MYSQL_USER: ada
+      MYSQL_PASSWORD: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+     - myapp_network
+
+volumes:
+  db_data:
+
+networks:
+  myapp_network:

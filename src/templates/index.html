@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Joke App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f8f8;
+        }
+        .container {
+            width: auto;
+            max-width: fit-content;
+            height: 300px;
+            padding: 2em;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: top;
+        }
+        
+        #joke-container {
+            font-size: 1em;
+            border: none;
+            padding: 1em;
+            margin-bottom: 1em;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            max-width: 30%;
+            word-wrap: normal;
+        }
+        
+        #new-joke-btn {
+            margin-top: 1em;
+            padding: 0.5em 1em;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: auto;
+        }
+        
+        #new-joke-btn:hover {
+            background-color: #45a049;
+        }
+
+        #recycle-joke-btn {
+            margin-top: 1em;
+            padding: 0.5em 1em;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: auto;
+        }
+        
+        #recycle-joke-btn:hover {
+            background-color: #45a049;
+        }
+
+
+    </style>  
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const jokeContainer = document.getElementById('joke-text');
+        const jokeButton = document.getElementById('new-joke-btn');
+        const recycleJokeButton = document.getElementById('recycle-joke-btn');
+        const totalJokesContainer = document.getElementById('total-jokes');
+        const nextFetchTimer = document.getElementById('next-fetch-timer');
+        const errorMessage = document.getElementById('error-message');
+
+        // Function to get the total number of jokes dynamically
+        function getTotalJokes() {
+            fetch('/get-total-jokes')
+                .then(response => response.json())
+                .then(data => {
+                    totalJokesContainer.innerText = `Total jokes available: ${data.total_jokes}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Initial call to get the total number of jokes
+        getTotalJokes();
+
+        let nextFetchTime = parseInt("{{ bot_status.next_fetch_in }}", 10);
+
+        const updateTimer = () => {
+            if (nextFetchTime > 0) {
+                nextFetchTimer.innerText = `Next background fetch in: ${nextFetchTime} seconds`;
+                nextFetchTime--;
+            } else {
+                nextFetchTimer.innerText = 'Ready for next fetch.';
+            }
+        };
+        updateTimer(); // Initial update
+        setInterval(updateTimer, 1000);
+
+        jokeButton.addEventListener('click', function() {
+            handleJokeAction('fetch');
+        });
+
+        recycleJokeButton.addEventListener('click', function() {
+            handleJokeAction('recycle');
+        });
+
+        function handleJokeAction(action) {
+            const button = action === 'fetch' ? jokeButton : recycleJokeButton;
+            button.disabled = true;
+
+            const endpoint = action === 'fetch' ? '/fetch-jokes' : '/recycle-jokes?count=1';
+
+            fetch(endpoint)
+                .then(response => {
+                    if (response.status === 429) {
+                        throw new Error('Too many requests. Please wait a moment.');
+                    } else if (!response.ok) {
+                        throw new Error('Server error. Please try again later.');
+                    }
+                    return response.json();
+                })
+                .then(joke => {
+                    if (joke) {
+                        jokeContainer.innerText = joke;
+                        errorMessage.innerText = '';
+                        errorMessage.style.color = 'initial';
+                        getTotalJokes();
+                    } else {
+                        jokeContainer.innerText = 'No more jokes!';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorMessage.innerText = error.message;
+                    errorMessage.style.color = 'red';
+                })
+                .finally(() => {
+                    button.disabled = false;
+                });
+        }
+    });
+</script>
+
+    
+</head>
+<body>
+    <h1>Dad Jokes App</h1>
+    <div id="joke-container">
+        <p id="joke-text">{{ initial_joke|safe }}</p>
+    </div>
+    <div id="total-jokes"></div>
+    <div id="next-fetch-timer"></div>
+    <div id="error-message"></div>
+    <button id="new-joke-btn">Get Another Dad Joke</button>
+    <button id="recycle-joke-btn">Recycle Existing Dad Jokes</button>
+</body>
+</html>
