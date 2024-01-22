@@ -30,7 +30,7 @@ Os requisitos para nosso projeto Docker são os seguintes:
 ```bash
 docker-compose build
 ```
-Após a construção bem-sucedida da imagem, execute os contêineres com o comando:
+Após a construção bem-sucedida da imagem, execute os contêineres em modo "detached":
 
 ```bash
 docker-compose up -d
