@@ -26,20 +26,20 @@ def get_connection():
     try:
         return connection_pool.get_connection()
     except Error as e:
-        logging.error(f"Error getting connection from pool: {e}")
+        logger.error(f"Error getting connection from pool: {e}")
         raise
 
 def execute_query(query, params=None):
     try:
         with get_connection() as conn:
             with conn.cursor(buffered=True) as cursor:
-                logging.info(f"Executing query: {query}")
+                logger.info(f"Executing query: {query}")
                 cursor.execute(query, params)
                 if query.strip().upper().startswith("SELECT"):
                     return cursor.fetchall()
                 conn.commit()
     except Error as e:
-        logging.error(f"Error executing query: {e}")
+        logger.error(f"Error executing query: {e}")
         raise
 
 def check_and_create_tables():
@@ -51,7 +51,7 @@ def check_and_create_tables():
         );
     """
     execute_query(check_and_create_table_query)
-    logging.info("Creating table")
+    logger.info("Creating table")
 
 def teardown_database():
     drop_table_query = "DROP TABLE IF EXISTS api_data;"
